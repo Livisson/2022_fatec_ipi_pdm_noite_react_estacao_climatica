@@ -36,6 +36,12 @@ class App extends React.Component{
         
     }
 
+    icones = {
+        "Primavera" : "fa-seedling",
+        "Verão" : "fa-umbrella-beach",
+        "Outono" : "fa-tree",
+        "Inverno" : "fa-snowman"
+    }
     /*window.navigator.geolocation.getCurrentPosition(
         // significa que executa quando a localização estiver disponivel
         (position) => {
