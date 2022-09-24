@@ -1,48 +1,59 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import ReactDOM from 'react-dom'
 import React from 'react'
+import EstacaoClimatica from './EstacaoClimatica'
+import Loading from './Loading'
 
-class App extends React.Component{
-  
-  constructor(props){
+class App extends React.Component {
+
+  constructor(props) {
     super(props)
     console.log('construtor')
-    this.state = {
+    /* this.state = {
       latitude: null,
       longitude: null,
       estacao: null,
       data: null,
       icone: null,
       mensagemDeErro: null
-    }
-    
+    } */
+
+  }
+
+  state = {
+    latitude: null,
+    longitude: null,
+    estacao: null,
+    data: null,
+    icone: null,
+    mensagemDeErro: null
   }
 
   obterEstacao = (data, latitude) => {
     const ano = data.getFullYear();
-    const d1 = new Date(ano , 5, 21)
-    const d2 = new Date (ano, 8, 24)
-    const d3 = new Date (ano, 11, 22)
-    const d4 = new Date (ano, 3, 21)
+    const d1 = new Date(ano, 5, 21)
+    const d2 = new Date(ano, 8, 22)
+    const d3 = new Date(ano, 11, 22)
+    const d4 = new Date(ano, 3, 21)
     const sul = latitude < 0
-    if (data >= d1 && data < d2){
+    if (data >= d1 && data < d2) {
       return sul ? 'Inverno' : 'Verão'
     }
-    if (data >= d2 && data < d3){
+    if (data >= d2 && data < d3) {
       return sul ? 'Primavera' : 'Outono'
     }
 
-    if (data >= d3 && data < d4){
+    if (data >= d3 && data < d4) {
       return sul ? 'Verão' : 'Inverno'
     }
     return sul ? 'Outono' : 'Primavera'
   }
-  
+
   icones = {
-    "Primavera" : "fa-seedling",
+    "Primavera": "fa-seedling",
     "Verão": "fa-umbrella-beach",
     "Outono": "fa-tree",
-    "Inverno": "fa-snowman"  
+    "Inverno": "fa-snowman"
   }
 
 
@@ -58,28 +69,29 @@ class App extends React.Component{
           data: data.toLocaleString(),
           estacao: estacao,
           icone: icone
-        })  
+        })
       },
       (err) => {
         console.log(err)
-        this.setState({mensagemDeErro: 'Tente novamente mais tarde'})
+        this.setState({ mensagemDeErro: 'Tente novamente mais tarde' })
       }
     )
   }
 
-  componentDidMount(){
+  componentDidMount() {
     console.log("componentDidMount")
+    this.obterLocalizacao()
   }
 
-  componentDidUpdate(){
+  componentDidUpdate() {
     console.log("componentDidUpdate")
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     console.log("componentWillUnmount")
   }
-  
-  render(){
+
+  render() {
     console.log("render")
     return (
       <div className='container mt-2'>
@@ -87,52 +99,30 @@ class App extends React.Component{
         <div className="row justify-content-center">
           {/* .col-md-8 */}
           <div className="col-md-8">
-            {/* .card>.card-body   */}
-            <div className="card">
-              <div className="card-body">
-                {/* .d-flex.align-items-center.border.rounded.mb-2 */}
-                <div className="d-flex align-items-center border rounded mb-2" style={{height: '6rem'}}>
-                  {/* i.fas.fa-5x */}
-                  <i className={`fas fa-5x ${this.state.icone}`}></i>
-                  {/* p.w-75.ms-3.text-center.fs-1 */}
-                  <p className="w-75 ms-3 text-center fs-1">
-                    {this.state.estacao}
-                  </p>
-                </div>
-                {/* div>p.text-center */}
-                <div>
-                  <p className="text-center">
-                    {
-                      this.state.latitude ?
-                        `Coordenadas: ${this.state.latitude}, ${this.state.longitude}. Data: ${this.state.data}.`
-                      :
-                      this.state.mensagemDeErro ?
-                        `${this.state.mensagemDeErro}`
-                      :
-                        `Clique no botão para saber a sua estação climática.`
-                    }
-                  </p>
-                </div>
-                {/* button.btn.btn-outline-primary.w-100.mt-2{Qual a minha estação?} */}
-                <button
-                  onClick={this.obterLocalizacao} 
-                  className="btn btn-outline-primary w-100 mt-2">
-                    Qual a minha estação?
-                </button>
+            {
 
-                {/* button.btn.btn-outline-danger.w-100.mt-2 */}
-                <button 
-                  className="btn btn-outline-danger w-100 mt-2"
-                  onClick={() => {
-                    ReactDOM.unmountComponentAtNode(document.querySelector('#root'))
-                  }}>
-                  Perigo!!!
-                </button>
-              </div>
-            </div>
+              !this.state.mensagemDeErro && !this.state.latitude
+                ?
+                <Loading />
+                :
+                this.state.mensagemDeErro ?
+                  <p className="border rounded p-2 fs-1">
+                    É Preciso dar permissão de acesso a localização
+                  </p>
+                  :
+                  <EstacaoClimatica
+                    icone={this.state.icone}
+                    estacao={this.state.estacao}
+                    latitude={this.state.latitude}
+                    longitude={this.state.longitude}
+                    // data={this.state.data}
+                    // mensagemDeErro={this.state.mensagemDeErro}
+                    obterLocalizacao={this.obterLocalizacao}
+                  />
+            }
           </div>
         </div>
-      </div> 
+      </div>
     )
   }
 }
